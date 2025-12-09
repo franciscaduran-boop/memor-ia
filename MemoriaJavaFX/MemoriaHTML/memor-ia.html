@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Memor-IA - Memoria</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+:root{
+    --body-bg: #c9f4ff;
+    --title-color: #20377a;
+    --topbar-bg: #6fa3a2;
+
+    --menu-bg: #073d68;
+    --menu-text: #ffffff;
+
+    --summary-text-color: #20377a;
+}
+
+body.dark-theme{
+    --body-bg: #073d68;
+    --title-color: #cff5ff;
+
+    --menu-bg: #c9f4ff;
+    --menu-text: #073d68;
+
+    --summary-text-color: #cff5ff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--body-bg);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 18px;
+}
+
+/* ─────────────── TOP BAR ─────────────── */
+
+.top-bar {
+    width: 100%;
+    background-color: var(--topbar-bg); /* verde fijo */
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 12px 40px;
+}
+.top-links {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+.top-links span {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    color: #20377a;
+    font-family: 'Bree Serif', serif;
+}
+.space { flex: 1; }
+
+/* selector de tema */
+#theme-select{
+    margin-left: 5px;
+    font-size: 13px;
+    padding: 3px 6px;
+}
+
+/* login + icono usuario */
+.login-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.login-box .login-texts span {
+    display: block;
+    cursor: pointer;
+    color: #20377a;
+    font-size: 15px;
+    font-family: 'Bree Serif', serif;
+}
+.user-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #20377a;
+    position: relative;
+    background: white;
+}
+.user-icon::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background-color: #20377a;
+    transform: translateX(-50%);
+}
+.user-icon::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: 16px;
+    height: 8px;
+    border-radius: 10px 10px 0 0;
+    border: 2px solid #20377a;
+    border-top: none;
+    transform: translateX(-50%);
+}
+
+/* ─────────────── LOGO ─────────────── */
+
+.logo {
+    width: 100%;
+    max-width: 900px;
+    text-align: left;
+    padding-left: 40px;
+    margin: 18px 0 12px;
+    box-sizing: border-box;
+    cursor: pointer; /* para volver al juego */
+}
+.logo h1 {
+    margin: 0;
+    font-size: 54px;
+    color: var(--title-color);
+    font-family: 'Bree Serif', serif;
+}
+.logo p {
+    margin: 0;
+    font-size: 17px;
+    color: var(--title-color);
+    font-family: 'Bree Serif', serif;
+}
+
+/* ─────────────── MENÚ DESPLEGABLE ─────────────── */
+
+.menu {
+    display: flex;
+    justify-content: center;
+    background-color: var(--menu-bg);
+    padding: 12px 80px;
+    border-radius: 32px;
+    gap: 90px;
+    margin-bottom: 12px;
+    max-width: 900px;
+}
+.menu-item{
+    position: relative;
+}
+.menu button {
+    background: transparent;
+    border: none;
+    color: var(--menu-text);
+    font-size: 22px;
+    cursor: pointer;
+    font-family: 'Bree Serif', serif;
+    position: relative;
+}
+.menu button:not(:last-child)::after{
+    content: "|";
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--menu-text);
+}
+
+/* Dropdowns */
+.dropdown-menu{
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--menu-bg);
+    color: var(--menu-text);
+    border-radius: 10px;
+    padding: 6px 0;
+    min-width: 160px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    display: none;
+    z-index: 10;
+}
+.dropdown-option{
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 18px;
+    white-space: nowrap;
+}
+.dropdown-option:hover{
+    background-color: rgba(255,255,255,0.15);
+}
+
+/* ─────────────── RESUMEN SELECCIÓN ─────────────── */
+
+.selector-container {
+    margin: 10px 0 18px;
+    text-align: center;
+}
+#estado-seleccion{ display:none; }
+.summary-block{ margin-top:4px; }
+.summary-line{ font-size:20px; }
+
+.summary-label,
+.summary-value,
+.descripcion{
+    color: var(--summary-text-color);
+}
+.summary-label,
+.summary-value{
+    font-family: 'Bree Serif', serif;
+}
+.summary-value{ font-weight:bold; }
+.descripcion{ font-size:16px; }
+
+/* vidas selector (modo limitado) */
+#vidas-container { margin-top:12px; }
+#vidas-container span{
+    font-family:'Bree Serif', serif;
+    color:var(--summary-text-color);
+}
+#vidasSelect{
+    padding:4px 8px;
+    font-size:16px;
+}
+
+/* ─────────────── TABLERO ─────────────── */
+
+.board {
+    background-color: #6fa3a2;
+    padding: 18px 26px;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    box-sizing: border-box;
+    max-width: 780px;
+    width: 100%;
+    margin-bottom: 40px;
+}
+.board-inner {
+    background-color: #fff2da;
+    border-radius: 22px;
+    padding: 18px 28px 24px;
+    box-sizing: border-box;
+}
+
+/* Info de tiempo/puntos/vidas centrada */
+.info-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+/* Título tablero */
+.titulo-tablero {
+    font-size: 26px;
+    color: #20377a;
+    margin-bottom: 8px;
+    text-align: left;
+    font-family: 'Bree Serif', serif;
+}
+
+/* Grid de cartas */
+.grid {
+    display: grid;
+    grid-gap: 10px;
+    justify-content: center;
+    width: 100%;
+}
+
+/* ─────────────── CARTAS ─────────────── */
+
+.card {
+    width: 96px;
+    height: 96px;
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative;
+    perspective: 600px;
+    transform-style: preserve-3d;
+}
+
+.card .front,
+.card .back {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 1s;
+}
+
+/* Frente (descubierto) – color crema nuevo */
+.card .front {
+    background: #fff6e5;              /* fondo cartas volteadas */
+    color: black;
+    transform: rotateY(180deg);
+    font-size: 40px;
+    border: 2px solid #c9b6a0;
+}
+
+/* Dorso (nube centrada) */
+.card .back {
+    background: #7fa1a3;
+    border: 2px solid #67898a;
+    transform: rotateY(0deg);
+    position: relative;
+}
+.card .back::before,
+.card .back::after {
+    content: "";
+    position: absolute;
+    background-color: #6d8c8e;
+}
+.card .back::before {
+    width: 40px;
+    height: 18px;
+    border-radius: 20px;
+    top: 56%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.card .back::after {
+    width: 26px;
+    height: 24px;
+    border-radius: 50%;
+    top: 46%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Animación flip */
+.card.flipped .front { transform: rotateY(0deg); }
+.card.flipped .back  { transform: rotateY(180deg); }
+
+/* Pares encontrados: fondo igual, solo borde verde */
+.card.matched .front {
+    background-color: #fff6e5;
+    border-color: #7bbf5a;   /* borde verde */
+}
+
+/* Para imágenes personalizadas */
+.card-image {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* ─────────────── SECCIÓN ACERCA DE ─────────────── */
+
+.about-section{
+    display:none;
+    width:100%;
+    max-width:1100px;
+    padding:30px 40px 40px;
+    box-sizing:border-box;
+}
+.about-title{
+    text-align:center;
+    font-size:32px;
+    color: var(--summary-text-color);   /* ← CAMBIO */
+    font-family:'Bree Serif', serif;
+    margin-bottom:30px;
+}
+.about-inner{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:60px;
+}
+.about-logo img{
+    max-width:260px;
+    height:auto;
+}
+.about-text{
+    flex:1;
+    color: var(--summary-text-color);   /* ← CAMBIO */
+    font-family:'Bree Serif', serif;
+    font-size:22px;
+    line-height:1.6;
+}
+
+
+
+/* ─────────────── REGISTER / LOGIN (maqueta sencilla) ─────────────── */
+
+.register-section,
+.login-section {
+    display: none;
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.register-wrapper,
+.login-wrapper {
+    background-color: #f7fbff;
+    border: 1px solid #e0e9f5;
+    width: 80%;
+    max-width: 700px;
+    padding: 25px 35px;
+    box-sizing: border-box;
+}
+
+.register-title,
+.login-title {
+    font-size: 32px;
+    color: #3559a8;
+    margin-bottom: 25px;
+    font-family: 'Bree Serif', serif;
+}
+
+.register-content,
+.login-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.register-form,
+.login-form {
+    flex: 1 1 250px;
+}
+
+.register-field-label,
+.login-field-label {
+    font-size: 16px;
+    color: #3559a8;
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+
+.register-input,
+.login-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #3559a8;
+    background: transparent;
+    padding: 4px 0;
+    outline: none;
+    font-size: 16px;
+}
+
+.register-button-main,
+.login-button-main {
+    margin-top: 20px;
+    padding: 8px 18px;
+    border-radius: 3px;
+    border: none;
+    background-color: #3559a8;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'Bree Serif', serif;
+}
+
+/* botones sociales registro */
+.register-social {
+    flex: 0 0 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 4px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+.social-facebook {
+    background-color: #3b5998;
+    margin-top: 20px;
+}
+.social-gmail {
+    background-color: #dd4b39;
+    margin-top: 32px;
+}
+.social-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.2);
+    font-size: 22px;
+}
+
+/* responsive */
+@media (max-width: 900px){
+    .about-inner{
+        flex-direction:column;
+        text-align:center;
+    }
+}
+@media (max-width: 700px) {
+    .top-bar{ padding:10px 16px; }
+    .logo{ padding-left:16px; }
+    .menu{ padding:10px 28px; gap:40px; }
+    .menu button:not(:last-child)::after{ right:-26px; }
+    .board{ max-width:100%; }
+    .register-wrapper,
+    .login-wrapper {
+        width: 95%;
+        padding: 20px;
+    }
+    .register-content,
+    .login-content {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- Barra superior -->
+<div class="top-bar">
+    <div class="top-links">
+        <span id="about-link">Acerca de</span>
+        <span>Ranking</span>
+        <span>¡Valóranos!</span>
+        <span>
+            Tema:
+            <select id="theme-select">
+                <option value="claro">Claro</option>
+                <option value="oscuro">Oscuro</option>
+            </select>
+        </span>
+    </div>
+    <div class="space"></div>
+    <div class="login-box">
+        <div class="user-icon"></div>
+        <div class="login-texts">
+            <span id="login-link">Iniciar sesión</span>
+            <span id="register-link">Registrate</span>
+        </div>
+    </div>
+</div>
+
+<!-- Logo (clic para volver al juego) -->
+<div class="logo" id="logo-home">
+    <h1>Memor-IA</h1>
+    <p>Juegos interactivos</p>
+</div>
+
+<!-- ========== SECCIÓN JUEGO ========== -->
+<div id="game-section">
+    <!-- MENÚ DESPLEGABLE -->
+    <div class="menu">
+        <div class="menu-item">
+            <button id="btn-modos">Modos</button>
+            <div id="dropdown-modo" class="dropdown-menu">
+                <div class="dropdown-option" data-value="normal">Normal</div>
+                <div class="dropdown-option" data-value="limitado">Limitado</div>
+            </div>
+        </div>
+        <div class="menu-item">
+            <button id="btn-disenos">Diseños</button>
+            <div id="dropdown-diseno" class="dropdown-menu">
+                <div class="dropdown-option" data-value="frutas">Frutas</div>
+                <div class="dropdown-option" data-value="animales">Animales</div>
+                <div class="dropdown-option" data-value="colores">Colores</div>
+            </div>
+        </div>
+        <div class="menu-item">
+            <button id="btn-dificultad">Dificultad</button>
+            <div id="dropdown-dificultad" class="dropdown-menu">
+                <div class="dropdown-option" data-value="infantil">Infantil</div>
+                <div class="dropdown-option" data-value="adulto">Adulto</div>
+                <div class="dropdown-option" data-value="senior">Senior</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESUMEN (se va llenando) -->
+    <div class="selector-container">
+        <div id="estado-seleccion">
+            <div id="block-modo" class="summary-block" style="display:none;">
+                <div class="summary-line">
+                    <span class="summary-label">Modo: </span>
+                    <span id="res-modo" class="summary-value"></span>
+                </div>
+                <div class="descripcion" id="desc-modo"></div>
+            </div>
+
+            <div id="block-diseno" class="summary-block" style="display:none;">
+                <div class="summary-line">
+                    <span class="summary-label">Diseño: </span>
+                    <span id="res-diseno" class="summary-value"></span>
+                </div>
+            </div>
+
+            <div id="block-dificultad" class="summary-block" style="display:none;">
+                <div class="summary-line">
+                    <span class="summary-label">Dificultad: </span>
+                    <span id="res-dificultad" class="summary-value"></span>
+                </div>
+                <div class="descripcion" id="desc-dificultad"></div>
+            </div>
+        </div>
+
+        <!-- VIDAS (solo modo limitado) -->
+        <div id="vidas-container" style="display:none;">
+            <span>Vidas:</span>
+            <select id="vidasSelect">
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- TABLERO -->
+    <div class="board">
+        <div class="board-inner">
+            <div class="info-bar">
+                <span id="tiempo">TIEMPO: 00:00</span>
+                <span id="puntos">PUNTOS: 0</span>
+                <span id="vidas">Vidas: 30</span>
+            </div>
+
+            <div class="titulo-tablero" id="titulo-tablero">
+                Para empezar selecciona un modo
+            </div>
+
+            <div class="grid" id="grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SECCIÓN ACERCA DE ========== -->
+<div class="about-section" id="about-section">
+    <div class="about-title">¿Para quién es Memor-IA?</div>
+    <div class="about-inner">
+        <div class="about-logo">
+    
+    <!-- Imagen antigua debajo -->
+    <img src="img/ucn.png" style="max-width:260px; display:block;">
+</div>
+        <div class="about-text">
+            <p>
+                Esta es una página diseñada para que usuarios de todas las edades ejerciten su mente,
+                fomenten la concentración, agilidad mental y memoria visual.
+            </p>
+            <p>
+                Este es un trabajo creado para la asignatura de Diseño de Software, dictado por
+                Patricio Bonilla en la Universidad Católica del Norte. Creado por Francisca Durán B.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SECCIÓN REGISTRO ========== -->
+<div class="register-section" id="register-section">
+    <div class="register-wrapper">
+        <div class="register-title">Registrarse</div>
+        <div class="register-content">
+            <div class="register-form">
+                <div class="register-field-label">Nombre</div>
+                <input class="register-input" type="text">
+                <div class="register-field-label">Email</div>
+                <input class="register-input" type="email">
+                <div class="register-field-label">Contraseña</div>
+                <input class="register-input" type="password">
+                <div class="register-field-label">Confirme contraseña</div>
+                <input class="register-input" type="password">
+                <button class="register-button-main">Registrarse</button>
+            </div>
+
+            <div class="register-social">
+                <button class="social-btn social-facebook">
+                    <div class="social-icon">f</div>
+                    Iniciar con facebook
+                </button>
+                <button class="social-btn social-gmail">
+                    <div class="social-icon">✉</div>
+                    Iniciar con gmail
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SECCIÓN INICIAR SESIÓN ========== -->
+<div class="login-section" id="login-section">
+    <div class="login-wrapper">
+        <div class="login-title">¡Bienvenid@!</div>
+        <div class="login-content">
+            <div class="login-form">
+                <div class="login-field-label">Nombre de usuario</div>
+                <input class="login-input" type="text">
+                <div class="login-field-label">Contraseña</div>
+                <input class="login-input" type="password">
+                <button class="login-button-main">Entrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// =================== VARIABLES GLOBALES ===================
+let FILAS=4, COLUMNAS=4, primeraSeleccion=null, bloqueado=false,
+    paresEncontrados=0, puntos=0, segundos=0, reloj=null;
+let mostrarCronometro=false, tamanoFigura=40, tipoDiseño='',
+    modo="", dificultad="", diseno="", vidas=30;
+let vidasBloqueadas=false;
+let usaImagenes = false;
+
+// DOM juego
+const grid = document.getElementById('grid');
+const tiempoLabel = document.getElementById('tiempo');
+const puntosLabel = document.getElementById('puntos');
+const vidasLabel = document.getElementById('vidas');
+const tituloTablero = document.getElementById('titulo-tablero');
+
+// Resumen selección
+const resModo = document.getElementById('res-modo');
+const resDiseno = document.getElementById('res-diseno');
+const resDificultad = document.getElementById('res-dificultad');
+const descModoEl = document.getElementById('desc-modo');
+const descDificultadEl = document.getElementById('desc-dificultad');
+const estadoSeleccion = document.getElementById('estado-seleccion');
+const blockModo = document.getElementById('block-modo');
+const blockDiseno = document.getElementById('block-diseno');
+const blockDificultad = document.getElementById('block-dificultad');
+
+const vidasContainer = document.getElementById('vidas-container');
+const vidasSelect = document.getElementById('vidasSelect');
+
+// Secciones
+const gameSection = document.getElementById('game-section');
+const aboutSection = document.getElementById('about-section');
+const registerSection = document.getElementById('register-section');
+const loginSection = document.getElementById('login-section');
+
+// Top bar enlaces
+const aboutLink = document.getElementById('about-link');
+const loginLink = document.getElementById('login-link');
+const registerLink = document.getElementById('register-link');
+const themeSelect = document.getElementById('theme-select');
+const logoHome = document.getElementById('logo-home');
+
+// Menú desplegable
+const btnModos = document.getElementById('btn-modos');
+const btnDisenos = document.getElementById('btn-disenos');
+const btnDificultad = document.getElementById('btn-dificultad');
+const dropdownModo = document.getElementById('dropdown-modo');
+const dropdownDiseno = document.getElementById('dropdown-diseno');
+const dropdownDificultad = document.getElementById('dropdown-dificultad');
+
+// Mapas texto
+const modosTexto = {"normal":"Normal","limitado":"Limitado"};
+const dificultadesTexto = {"infantil":"Infantil","adulto":"Adulto","senior":"Senior"};
+const disenosTexto = {"frutas":"Frutas","animales":"Animales","colores":"Colores"};
+
+// =================== RELOJ ===================
+function iniciarReloj(){
+    segundos=0;
+    clearInterval(reloj);
+    reloj = setInterval(()=>{
+        segundos++;
+        let mm = Math.floor(segundos/60).toString().padStart(2,'0');
+        let ss = (segundos%60).toString().padStart(2,'0');
+        tiempoLabel.textContent=`TIEMPO: ${mm}:${ss}`;
+    },1000);
+}
+
+// =================== SIMBOLOS (IMÁGENES) ===================
+function generarSimbolos(cantidadParejas){
+    let pool=[];
+    usaImagenes = false;   // por defecto
+
+    if(tipoDiseño==='frutas'){
+        usaImagenes = true;
+        pool = [
+            "img/frutas/arandano.png",
+            "img/frutas/cereza.png",
+            "img/frutas/coco.png",
+            "img/frutas/dragon.png",
+            "img/frutas/durazno.png",
+            "img/frutas/frambuesa.png",
+            "img/frutas/frutilla.png",
+            "img/frutas/kiwi.png",
+            "img/frutas/limon.png",
+            "img/frutas/mango.png",
+            "img/frutas/manzanar.png",
+            "img/frutas/manzanav.png",
+            "img/frutas/melon.png",
+            "img/frutas/naranja.png",
+            "img/frutas/pera.png",
+            "img/frutas/pina.png",
+            "img/frutas/sandia.png",
+            "img/frutas/uva.png"
+        ];
+    } else if(tipoDiseño==='animales'){
+        usaImagenes = true;
+        pool = [
+            "img/animales/burro.png",
+            "img/animales/conejo.png",
+            "img/animales/elefante.png",
+            "img/animales/gallina.png",
+            "img/animales/gato.png",
+            "img/animales/hamster.png",
+            "img/animales/hipopotamo.png",
+            "img/animales/leon.png",
+            "img/animales/mono.png",
+            "img/animales/oso.png",
+            "img/animales/perezoso.png",
+            "img/animales/perro.png",
+            "img/animales/pez.png",
+            "img/animales/puercoespin.png",
+            "img/animales/raton.png",
+            "img/animales/sapo.png",
+            "img/animales/vaca.png",
+            "img/animales/zorro.png"
+        ];
+    } else if(tipoDiseño==='colores'){
+        usaImagenes = true;
+        pool = [
+            "img/colores/amarillo.png",
+            "img/colores/azul.png",
+            "img/colores/cafe.png",
+            "img/colores/celeste1.png",
+            "img/colores/celeste2.png",
+            "img/colores/gris.png",
+            "img/colores/morado1.png",
+            "img/colores/morado2.png",
+            "img/colores/morado3.png",
+            "img/colores/naranja.png",
+            "img/colores/negro.png",
+            "img/colores/rojo.png",
+            "img/colores/rosa1.png",
+            "img/colores/rosa2.png",
+            "img/colores/verde1.png",
+            "img/colores/verde2.png",
+            "img/colores/verde3.png",
+            "img/colores/verde4.png"
+        ];
+    }
+
+    let salida=[];
+    for(let i=0;i<cantidadParejas;i++){
+        salida.push(pool[i % pool.length]);
+    }
+    return salida;
+}
+
+// =================== RESUMEN ===================
+function actualizarResumen(){
+    let alguno = false;
+
+    if(modo){
+        blockModo.style.display = 'block';
+        resModo.textContent = modosTexto[modo] || "";
+        alguno = true;
+    }else{
+        blockModo.style.display = 'none';
+        resModo.textContent = "";
+        descModoEl.textContent = "";
+    }
+
+    if(diseno){
+        blockDiseno.style.display = 'block';
+        resDiseno.textContent = disenosTexto[diseno] || "";
+        alguno = true;
+    }else{
+        blockDiseno.style.display = 'none';
+        resDiseno.textContent = "";
+    }
+
+    if(dificultad){
+        blockDificultad.style.display = 'block';
+        resDificultad.textContent = dificultadesTexto[dificultad] || "";
+        alguno = true;
+    }else{
+        blockDificultad.style.display = 'none';
+        resDificultad.textContent = "";
+        descDificultadEl.textContent = "";
+    }
+
+    estadoSeleccion.style.display = alguno ? 'block' : 'none';
+}
+
+// =================== CREAR TABLERO ===================
+function crearTablero(){
+    grid.innerHTML='';
+
+    if(!modo || !dificultad || !diseno){
+        tituloTablero.textContent="Para empezar selecciona un modo";
+        return;
+    }
+
+    tipoDiseño = diseno;
+
+    if(dificultad==='infantil'){
+        FILAS=4; COLUMNAS=4; mostrarCronometro=false; tamanoFigura=40;
+        descDificultadEl.textContent="4x4 sin cronómetro";
+    }
+    else if(dificultad==='adulto'){
+        FILAS=6; COLUMNAS=6; mostrarCronometro=true; tamanoFigura=38;
+        descDificultadEl.textContent="6x6 con cronómetro";
+    }
+    else if(dificultad==='senior'){
+        FILAS=6; COLUMNAS=6; mostrarCronometro=false; tamanoFigura=46;
+        descDificultadEl.textContent="6x6 sin cronómetro";
+    }
+
+    clearInterval(reloj);
+    reloj = null;
+    segundos = 0;
+    tiempoLabel.textContent = "TIEMPO: 00:00";
+
+    tituloTablero.textContent="Encuentra los pares";
+
+    primeraSeleccion=null; bloqueado=false; paresEncontrados=0; puntos=0;
+    puntosLabel.textContent="PUNTOS: 0";
+
+    if(modo==='limitado'){
+        vidasContainer.style.display='block';
+        vidasBloqueadas=false;
+        vidasSelect.disabled=false;
+        vidas = parseInt(vidasSelect.value);
+        vidasLabel.textContent = `Vidas: ${vidas}`;
+    } else {
+        vidasContainer.style.display='none';
+        vidas = 30;
+        vidasLabel.textContent = `Vidas: ${vidas}`;
+        if(mostrarCronometro){
+            iniciarReloj();
+        }
+    }
+
+    const cantidadParejas = (FILAS*COLUMNAS)/2;
+    let simbolos = generarSimbolos(cantidadParejas);
+    let pairList = [...simbolos, ...simbolos];
+    pairList.sort(()=>Math.random()-0.5);
+
+    grid.style.gridTemplateColumns=`repeat(${COLUMNAS}, 1fr)`;
+
+    pairList.forEach(valor=>{
+        const card=document.createElement('div');
+        card.classList.add('card');
+
+        let frontContent = "";
+
+        if(usaImagenes){
+            frontContent = `
+                <div class="front">
+                    <img src="${valor}" class="card-image">
+                </div>
+                <div class="back"></div>`;
+        } else {
+            frontContent = `
+                <div class="front" style="font-size:${tamanoFigura}px">${valor}</div>
+                <div class="back"></div>`;
+        }
+
+        card.innerHTML = frontContent;
+
+        card.addEventListener('click',()=>{
+            if(bloqueado || card.classList.contains('matched') || card.classList.contains('flipped') || (modo==='limitado' && vidas<=0)) return;
+
+            // en modo limitado, si hay cronómetro, lo iniciamos solo cuando ya se eligieron vidas y se empieza a jugar
+            if(modo==='limitado' && mostrarCronometro && !reloj){
+                iniciarReloj();
+            }
+
+            card.classList.add('flipped');
+
+            if(!primeraSeleccion){
+                primeraSeleccion=card;
+            } else{
+                bloqueado=true;
+                let valor1, valor2;
+
+                if(usaImagenes){
+                    valor1 = primeraSeleccion.querySelector('.front img').src;
+                    valor2 = card.querySelector('.front img').src;
+                } else {
+                    valor1 = primeraSeleccion.querySelector('.front')?.textContent;
+                    valor2 = card.querySelector('.front')?.textContent;
+                }
+
+                if(valor1===valor2){
+                    primeraSeleccion.classList.add('matched');
+                    card.classList.add('matched');
+                    primeraSeleccion=null;
+                    bloqueado=false;
+                    paresEncontrados++; puntos+=10;
+                    puntosLabel.textContent=`PUNTOS: ${puntos}`;
+                    if(paresEncontrados===cantidadParejas){
+                        if(reloj){
+                            clearInterval(reloj);
+                            reloj = null;
+                        }
+                        tituloTablero.textContent="¡Ganaste!";
+                    }
+                } else {
+                    setTimeout(()=>{
+                        primeraSeleccion.classList.remove('flipped');
+                        card.classList.remove('flipped');
+                        primeraSeleccion=null;
+                        bloqueado=false;
+                        puntos=Math.max(0,puntos-2);
+                        puntosLabel.textContent=`PUNTOS: ${puntos}`;
+                        if(modo==='limitado'){
+                            vidas--;
+                            vidasLabel.textContent = `Vidas: ${vidas}`;
+                            if(vidas<=0){
+                                tituloTablero.textContent="¡Perdiste todas las vidas!";
+                                if(reloj){
+                                    clearInterval(reloj);
+                                    reloj = null;
+                                }
+                                grid.querySelectorAll('.card').forEach(c=>c.classList.add('disabled'));
+                            }
+                        }
+                    },900);
+                }
+            }
+        });
+
+        grid.appendChild(card);
+    });
+}
+
+// =================== DROPDOWNS ===================
+function closeAllDropdowns(){
+    dropdownModo.style.display='none';
+    dropdownDiseno.style.display='none';
+    dropdownDificultad.style.display='none';
+}
+
+btnModos.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const visible = dropdownModo.style.display==='block';
+    closeAllDropdowns();
+    dropdownModo.style.display = visible ? 'none' : 'block';
+});
+btnDisenos.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const visible = dropdownDiseno.style.display==='block';
+    closeAllDropdowns();
+    dropdownDiseno.style.display = visible ? 'none' : 'block';
+});
+btnDificultad.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const visible = dropdownDificultad.style.display==='block';
+    closeAllDropdowns();
+    dropdownDificultad.style.display = visible ? 'none' : 'block';
+});
+document.addEventListener('click', ()=> closeAllDropdowns());
+
+dropdownModo.querySelectorAll('.dropdown-option').forEach(opt=>{
+    opt.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        modo = opt.dataset.value;
+        if(modo==='normal') descModoEl.textContent="Modo clásico de emparejamiento.";
+        else if(modo==='limitado') descModoEl.textContent="Contarás con un número de vidas para encontrar todos los pares.";
+        actualizarResumen();
+        crearTablero();
+        closeAllDropdowns();
+    });
+});
+dropdownDiseno.querySelectorAll('.dropdown-option').forEach(opt=>{
+    opt.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        diseno = opt.dataset.value;
+        actualizarResumen();
+        crearTablero();
+        closeAllDropdowns();
+    });
+});
+dropdownDificultad.querySelectorAll('.dropdown-option').forEach(opt=>{
+    opt.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        dificultad = opt.dataset.value;
+        actualizarResumen();
+        crearTablero();
+        closeAllDropdowns();
+    });
+});
+
+// Vidas: cuando cambian, fijamos valor (modo limitado)
+vidasSelect.addEventListener('change', ()=>{
+    if(vidasBloqueadas) return;
+    if(modo==='limitado' && dificultad && diseno){
+        vidasBloqueadas=true;
+        vidasSelect.disabled=true;
+        vidas = parseInt(vidasSelect.value);
+        vidasLabel.textContent = `Vidas: ${vidas}`;
+        // el tablero ya está creado; el tiempo se inicia en el primer click
+    }
+});
+
+// =================== NAVEGACIÓN SECCIONES ===================
+function mostrarSolo(seccion){
+    gameSection.style.display = (seccion==='game') ? 'block' : 'none';
+    aboutSection.style.display = (seccion==='about') ? 'block' : 'none';
+    registerSection.style.display = (seccion==='register') ? 'flex' : 'none';
+    loginSection.style.display = (seccion==='login') ? 'flex' : 'none';
+}
+
+aboutLink.addEventListener('click', ()=>{
+    mostrarSolo('about');
+    closeAllDropdowns();
+});
+loginLink.addEventListener('click', ()=>{
+    mostrarSolo('login');
+    closeAllDropdowns();
+});
+registerLink.addEventListener('click', ()=>{
+    mostrarSolo('register');
+    closeAllDropdowns();
+});
+logoHome.addEventListener('click', ()=>{
+    mostrarSolo('game');
+    closeAllDropdowns();
+});
+
+// =================== TEMA CLARO/OSCURO ===================
+themeSelect.addEventListener('change', ()=>{
+    if(themeSelect.value === 'oscuro'){
+        document.body.classList.add('dark-theme');
+    }else{
+        document.body.classList.remove('dark-theme');
+    }
+});
+
+// Inicio: solo juego visible
+mostrarSolo('game');
+actualizarResumen();
+</script>
+</body>
+</html>
